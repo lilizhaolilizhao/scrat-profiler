@@ -57,7 +57,7 @@ public class Enhancer {
 
         byte[] enhanced = cw.toByteArray();
 
-        FileOutputStream fos = new FileOutputStream("/Users/daichao/Person1.class");
+        FileOutputStream fos = new FileOutputStream("/Users/oneapm/git/scrat-profiler/target/Person1.class");
         fos.write(enhanced);
         fos.close();
         Class<?> enhancedClazz = new EnhancerClassLoader(genTransferClassName(), enhanced,

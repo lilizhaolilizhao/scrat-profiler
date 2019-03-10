@@ -1,17 +1,12 @@
 package cn.david.scrat.profiler.enhance;
 
+import org.objectweb.asm.*;
+import org.objectweb.asm.commons.AdviceAdapter;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
+
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.AdviceAdapter;
-import org.objectweb.asm.commons.JSRInlinerAdapter;
-import org.objectweb.asm.commons.Method;
 
 /**
  * transform class bytecode(植入增强代码)
@@ -121,21 +116,21 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes, AsmMethods {
         try {
             Stack<Object> beginMethodFrame = threadFrameStack.get().pop();
 
-            Object[] args = (Object[])beginMethodFrame.pop();
+            Object[] args = (Object[]) beginMethodFrame.pop();
             Object target = beginMethodFrame.pop();
-            String methodDesc = (String)beginMethodFrame.pop();
-            String methodName = (String)beginMethodFrame.pop();
-            String className = (String)beginMethodFrame.pop();
-            ClassLoader classLoader = (ClassLoader)beginMethodFrame.pop();
-            AdviceListener adviceListener = (AdviceListener)beginMethodFrame.pop();
+            String methodDesc = (String) beginMethodFrame.pop();
+            String methodName = (String) beginMethodFrame.pop();
+            String className = (String) beginMethodFrame.pop();
+            ClassLoader classLoader = (ClassLoader) beginMethodFrame.pop();
+            AdviceListener adviceListener = (AdviceListener) beginMethodFrame.pop();
 
             if (isThrowing) {
                 //执行
                 doAfterThrowing(adviceListener, classLoader, className, methodName, methodDesc, target, args,
-                    (Throwable)returnTarget);
+                        (Throwable) returnTarget);
             } else {
                 doAfterReturning(adviceListener, classLoader, className, methodName, methodDesc, target, args,
-                    returnTarget);
+                        returnTarget);
             }
 
         } finally {
@@ -196,7 +191,7 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes, AsmMethods {
         }
 
         return new AdviceAdapter(ASM5, new JSRInlinerAdapter(mv, access, name, desc, signature, exceptions),
-            access, name, desc) {
+                access, name, desc) {
 
             Label beginLabel = new Label();
 
@@ -255,7 +250,7 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes, AsmMethods {
 
             private void loadThisOrNullIfStatic() {
                 if (isStatic()) {
-                    push((Type)null);
+                    push((Type) null);
                 } else {
                     loadThis();
                 }
@@ -265,7 +260,7 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes, AsmMethods {
                 switch (opcode) {
 
                     case RETURN: {
-                        push((Type)null);
+                        push((Type) null);
                         break;
                     }
 
@@ -311,10 +306,10 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes, AsmMethods {
 
     private boolean isIgnore(MethodVisitor mv, int access, String methodName) {
         return null == mv
-            || isAbstract(access)
-            || isFinalMethod(access)
-            || "<clinit>".equals(methodName)
-            || "<init>".equals(methodName);
+                || isAbstract(access)
+                || isFinalMethod(access)
+                || "<clinit>".equals(methodName)
+                || "<init>".equals(methodName);
     }
 
     private boolean isAbstract(int access) {

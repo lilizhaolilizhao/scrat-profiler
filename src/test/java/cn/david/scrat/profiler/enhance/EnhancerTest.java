@@ -1,19 +1,18 @@
 package cn.david.scrat.profiler.enhance;
 
+import org.junit.Test;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.junit.Test;
-
 /**
- *
  * @author david
  * @since 2017年11月04日
  */
 public class EnhancerTest {
 
-    @Test
+    @Test(expected = InvocationTargetException.class)
     public void testGenByteCodes() throws NoSuchMethodException, InvocationTargetException {
         Enhancer enhancer = new Enhancer();
         enhancer.setTargetClass(Person.class);
